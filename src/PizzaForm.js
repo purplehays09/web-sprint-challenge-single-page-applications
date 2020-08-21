@@ -104,7 +104,8 @@ export default function PizzaForm() {
       useEffect(() => {
         formSchema.isValid(formValues)
           .then(valid => {
-            setDisabled(!valid)
+            // setDisabled(!valid)
+            console.log('Looks Good')
           })
       }, [formValues])
 
@@ -129,7 +130,7 @@ export default function PizzaForm() {
              <form onSubmit={onSubmit}>
                 <h3>Build Your Own Pizza</h3>
                 <div className='errors'>
-                {/* 🔥 RENDER THE VALIDATION ERRORS HERE */}
+                {/* RENDER THE VALIDATION ERRORS HERE */}
                 <div>{formErrors.name}</div>
                 </div>
                 <div className='formSection'>
@@ -319,8 +320,9 @@ export default function PizzaForm() {
                     <input 
                     onClick={submit} 
                     type='submit' 
+                    id='submit'
                     value="Place Order"
-                    disabled={disabled}
+                    // disabled={disabled}
                     />
                 </div>
 
