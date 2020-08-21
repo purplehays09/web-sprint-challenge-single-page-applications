@@ -3,7 +3,7 @@ import axios from "axios";
 import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom'
 import './App.css';
 import * as yup from 'yup'
-// import formSchema from './validation/formSchema'
+import formSchema from './validation/formSchema'
 import PizzaForm from './PizzaForm'
 
 
@@ -37,10 +37,20 @@ const App = () => {
         <div>
           <h1>Lambda Eats</h1>
           <p>Your favorite food delivered while coding</p>
+
           <Link to='/PizzaForm'>PIZZA</Link>
 
-          <PizzaForm/>
+          {/* <PizzaForm/> */}
 
+
+          <Switch>
+          <Route path="/PizzaForm">
+            <PizzaForm />
+          </Route>
+          {/* <Route path="/">
+            <App />
+          </Route> */}
+        </Switch>
 
         </div>
       </header>

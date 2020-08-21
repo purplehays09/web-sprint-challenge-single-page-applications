@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import axios from "axios";
 import { Link, Route, Switch } from 'react-router-dom'
+import formSchema from './validation/formSchema'
 import './App.css';
 import * as yup from 'yup'
 
@@ -15,14 +16,73 @@ const initialFormValues = {
         olives:false,
         pineapple:false,
     },
-    instructions:''
+    instructions:'',
+    name:''
 }
+
+const initialFormErrors = {
+    name: '',
+  }
+
+const initialDisabled = true
+
 
 export default function PizzaForm() {
     const [formValues, setFormValues] = useState(initialFormValues)
+    const [formErrors, setFormErrors] = useState(initialFormErrors) 
+    const [disabled, setDisabled] = useState(initialDisabled)  
+
+    
+
+
+    const postOrder = newOrder => {
+
+        axios.post('https://reqres.in/api/users', newOrder)
+          .then(res => {
+            console.log(newOrder)
+        })
+          .catch(err => {
+            debugger
+          })
+          .finally(() => {
+            setFormValues(initialFormValues)
+          })
+      }
+
+      const onSubmit = (evt) =>{
+          evt.preventDefault()
+          submit()
+      }
+
+      const submit = () => {
+        const newOrder = {
+          size: formValues.size.trim(),
+          sauce: formValues.sauce.trim(),
+          instructions: formValues.instructions.trim(),
+          toppings: Object.keys(formValues.toppings).filter(t => formValues.toppings[t]),
+        }
+        postOrder(newOrder)
+      }
 
     const inputChange = (evt) =>{
-        const {name,value} = evt
+        const {name,value} = evt.target
+
+        yup
+        .reach(formSchema, name)
+        .validate(value)
+        .then(valid => {
+          setFormErrors({
+            ...formErrors,
+            [name]: ""
+          });
+        })
+
+        .catch(err => {
+          setFormErrors({
+            ...formErrors,
+            [name]: err.errors[0]
+          });
+      });
         setFormValues({
             ...formValues,
             [name]: value 
@@ -30,16 +90,23 @@ export default function PizzaForm() {
     }
 
     const checkboxChange = (evt) => {
-        const {name, isChecked} = evt
+        const {name} = evt.target
 
         setFormValues({
           ...formValues,
           toppings: {
             ...formValues.toppings,
-            [name]: isChecked,
+            [name]: !formValues.toppings[name],
           }
         })
       }
+
+      useEffect(() => {
+        formSchema.isValid(formValues)
+          .then(valid => {
+            setDisabled(!valid)
+          })
+      }, [formValues])
 
     return(
         <div>
@@ -59,8 +126,12 @@ export default function PizzaForm() {
                 </div>
              </header>
 
-             <form>
+             <form onSubmit={onSubmit}>
                 <h3>Build Your Own Pizza</h3>
+                <div className='errors'>
+                {/* 🔥 RENDER THE VALIDATION ERRORS HERE */}
+                <div>{formErrors.name}</div>
+                </div>
                 <div className='formSection'>
                     <div className='formTitle'>
                         <h4>Choice of Size</h4>
@@ -68,10 +139,10 @@ export default function PizzaForm() {
                     </div>
                     <div className='form'>
                         <select 
-                        name='size' 
-                        id='size'
                         onChange={inputChange}
                         value={formValues.size}
+                        name='size' 
+                        id='size'
                         
                         >
                             <option value=''>Select</option>
@@ -81,7 +152,7 @@ export default function PizzaForm() {
                         </select>
                     </div>                    
                 </div>
-
+                
                 <div className='formSection'>
                     <div className='formTitle'>
                         <h4>Choice of Sauce</h4>
@@ -89,28 +160,31 @@ export default function PizzaForm() {
                     </div>
                     <div className='form'>
                         <input 
+                        onChange={inputChange}
                         name='sauce' 
                         id='sauce' 
                         type='radio'
                         value='marinara'
                         />
-                        <label for='marinara'>Marinara</label>
+                        <label htmlFor='marinara'>Marinara</label>
                         
                         <input 
+                        onChange={inputChange}
                         name='sauce' 
                         id='sauce' 
                         type='radio'
                         value='pesto'
                         />
-                        <label for='pesto'>Pesto</label>
+                        <label htmlFor='pesto'>Pesto</label>
 
                         <input 
+                        onChange={inputChange}
                         name='sauce' 
                         id='sauce' 
                         type='radio'
                         value='garlic'
                         />
-                        <label for='garlic'>Garlic</label>
+                        <label htmlFor='garlic'>Garlic</label>
                     </div>      
 
                     
@@ -123,52 +197,58 @@ export default function PizzaForm() {
                     </div>
                     <div className='form'>
                          <input 
+                            onChange={checkboxChange}
                             name='pepperoni' 
                             id='pepperoni' 
                             type='checkbox'
-                            value='pepperoni'
+                            value='true'
                             />
-                            <label for='pepperoni'>Pepperoni</label>
+                            <label htmlFor='pepperoni'>Pepperoni</label>
 
                             <input 
+                            onChange={checkboxChange}
                             name='sausage' 
                             id='sausage' 
                             type='checkbox'
                             value='sausage'
                             />
-                            <label for='sausage'>Sausage</label>
+                            <label htmlFor='sausage'>Sausage</label>
 
                             <input 
+                            onChange={checkboxChange}
                             name='tomatoes' 
                             id='tomatoes' 
                             type='checkbox'
                             value='tomatoes'
                             />
-                            <label for='tomatoes'>Tomatoes</label>    
+                            <label htmlFor='tomatoes'>Tomatoes</label>    
 
                             <input 
+                            onChange={checkboxChange}
                             name='anchovies' 
                             id='anchovies' 
                             type='checkbox'
                             value='anchovies'
                             />
-                            <label for='anchovies'>Anchovies</label>
+                            <label htmlFor='anchovies'>Anchovies</label>
 
                             <input 
+                            onChange={checkboxChange}
                             name='olives' 
                             id='olives' 
                             type='checkbox'
                             value='olives'
                             />
-                            <label for='olives'>Olives</label>
+                            <label htmlFor='olives'>Olives</label>
 
                             <input 
+                            onChange={checkboxChange}
                             name='pineapple' 
                             id='pineapple' 
                             type='checkbox'
                             value='pineapple'
                             />
-                            <label for='pineapple'>Pineapple</label>      
+                            <label htmlFor='pineapple'>Pineapple</label>      
                     </div> 
                                                          
 
@@ -201,17 +281,47 @@ export default function PizzaForm() {
                     </div>
                     <div className='form'>
                         <input 
+                        onChange={inputChange}
                         name='instructions' 
                         id='instructions' 
                         type='text'
                         maxLength='100'
-                        value='CHANGE TO STATE'
+                        value={formValues.instructions}
                         placeholder='Any Special Instructions?'
                         />
   
                     </div> 
                     
                     
+                </div>
+
+                <div className='formSection'>
+                    <div className='formTitle'>
+                        <h4>What is the Name htmlFor the order?</h4>
+                    </div>
+                    <div className='form'>
+                        <input 
+                        onChange={inputChange}
+                        name='name' 
+                        id='name' 
+                        type='text'
+                        maxLength='20'
+                        value={formValues.name}
+                        placeholder='Enter Name'
+                        />
+  
+                    </div> 
+                    
+                    
+                </div>
+
+                <div className='formSubmit'>
+                    <input 
+                    onClick={submit} 
+                    type='submit' 
+                    value="Place Order"
+                    disabled={disabled}
+                    />
                 </div>
 
              </form>
