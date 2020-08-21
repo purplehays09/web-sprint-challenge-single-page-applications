@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import axios from "axios";
+import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom'
 import './App.css';
 import * as yup from 'yup'
 // import formSchema from './validation/formSchema'
-// import Form from './form'
+import PizzaForm from './PizzaForm'
 
 
 //Step 1 Build the UI to have the basic options that you need according to the 
@@ -20,7 +21,7 @@ import * as yup from 'yup'
 
 const App = () => {
   return (
-    <div>
+    <Router>
       <header>
 
         <nav>
@@ -36,14 +37,17 @@ const App = () => {
         <div>
           <h1>Lambda Eats</h1>
           <p>Your favorite food delivered while coding</p>
-          <button id='pizzaBtn'>PIZZA</button>
+          <Link to='/PizzaForm'>PIZZA</Link>
+
+          <PizzaForm/>
+
 
         </div>
       </header>
 
 
       
-    </div>
+    </Router>
   );
 };
 export default App;
