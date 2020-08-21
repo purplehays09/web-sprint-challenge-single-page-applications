@@ -38,7 +38,7 @@ const App = () => {
           <h1>Lambda Eats</h1>
           <p>Your favorite food delivered while coding</p>
 
-          <Link to='/PizzaForm'>PIZZA</Link>
+          <Link id="pizza" to='/PizzaForm'>PIZZA</Link>
 
           {/* <PizzaForm/> */}
 
